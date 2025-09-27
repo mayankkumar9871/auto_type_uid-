@@ -106,7 +106,7 @@ async def type_uids(update: Update, context: ContextTypes.DEFAULT_TYPE):
         for group_id in groups:
             try:
                 await context.bot.send_message(chat_id=int(group_id), text=text)
-                await asyncio.sleep(1)  # small delay
+                await asyncio.sleep(1)
             except Exception as e:
                 print(f"Error sending {uid} to {group_id}: {e}")
     await update.message.reply_text("✅ /type completed.")
@@ -152,10 +152,11 @@ async def main():
 
     # Scheduler
     scheduler = AsyncIOScheduler()
-    scheduler.add_job(lambda: asyncio.create_task(scheduled_task(application)), "interval", hours=DEFAULT_INTERVAL_HOURS)
+    time_data = load_json(TIME_FILE, {"hours": DEFAULT_INTERVAL_HOURS, "message": DEFAULT_MESSAGE})
+    scheduler.add_job(lambda: asyncio.create_task(scheduled_task(application)), "interval", hours=time_data["hours"])
     scheduler.start()
 
-    print("🤖 Bot running...")
+    print("🤖 Bot running on Python 3.11...")
     await application.run_polling()
 
 if __name__ == "__main__":
